@@ -1,0 +1,40 @@
+Index: e-smith-tinydns/createlinks
+diff -u e-smith-tinydns/createlinks:1.4 e-smith-tinydns/createlinks:1.5
+--- e-smith-tinydns/createlinks:1.4	Thu Aug 21 15:29:31 2003
++++ e-smith-tinydns/createlinks	Thu Aug 28 13:41:45 2003
+@@ -14,9 +14,34 @@
+ 	"root/etc/e-smith/events/${event}/S${level}${action}: $!";
+ }
+ 
++sub safe_symlink {
++    my ($from, $to) = @_;
++    use File::Basename;
++    use File::Path;
++    mkpath(dirname($to));
++    unlink($to);
++    symlink($from, $to) or die "Can't create symlink from $from to $to: $!";
++}
++
++sub service_link_enhanced
++{
++    my ($service, $level, $rc) = @_;
++
++    $rc = 7 unless defined $rc;
++    $level =~ /[^\d]/ or $level = "S${level}";
++    safe_symlink("/etc/rc.d/init.d/e-smith-service",
++        "root/etc/rc.d/rc${rc}.d/${level}${service}");
++}
++
+ #--------------------------------------------------
+ # actions for bootstrap-console-save event:
+ #--------------------------------------------------
+ $event = "bootstrap-console-save";
+ 
+ event_link("tinydns-conf", $event, "25");
++
++safe_symlink("daemontools", "root/etc/rc.d/init.d/tinydns");
++service_link_enhanced("tinydns", "S55", "7");
++service_link_enhanced("tinydns", "K65", "6");
++service_link_enhanced("tinydns", "K65", "0");
++service_link_enhanced("tinydns", "K65", "1");
+Index: e-smith-tinydns/e-smith-tinydns.spec

@@ -1,0 +1,119 @@
+Index: e-smith-tinydns/e-smith-tinydns.spec
+diff -u e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/00functions:1.4 e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/00functions:1.5
+--- e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/00functions:1.4	Wed Jun 25 12:30:52 2003
++++ e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/00functions	Mon Jan 12 11:54:05 2004
+@@ -1,18 +1,18 @@
+ {
+ 
+-use esmith::HostsDB;
+-$hosts = esmith::HostsDB->open_ro;
++    use esmith::HostsDB;
++    $hosts = esmith::HostsDB->open_ro;
+ 
+-use esmith::DomainsDB;
+-my $ddb = esmith::DomainsDB->open_ro;
++    use esmith::DomainsDB;
++    my $ddb = esmith::DomainsDB->open_ro;
+ 
+-use esmith::util;
++    use esmith::util;
+ 
+-#--------------------------------------------------------
+-# Returns a hash of hostnames with IP addresses as values
+-#--------------------------------------------------------
++    #--------------------------------------------------------
++    # Returns a hash of hostnames with IP addresses as values
++    #--------------------------------------------------------
+ 
+-sub get_generic_hostentries 
++    sub get_generic_hostentries 
+     {
+         #--------------------------------------------------
+         # Compute local IP address, netmask and network values.
+@@ -52,17 +52,17 @@
+         return %name2ip;
+     }
+ 
+-#--------------------------------------------------------
+-# Calculates an array of domains that require DNS
+-#--------------------------------------------------------
+-@domains = map { $_->key } $ddb->get_all_by_prop('type' => 'domain');
+-
+-#--------------------------------------------------------
+-# Returns an array of domains that require DNS
+-#--------------------------------------------------------
+-sub get_domains { return @domains; }
++    #--------------------------------------------------------
++    # Calculates an array of domains that require DNS
++    #--------------------------------------------------------
++    @domains = map { $_->key } $ddb->get_all_by_prop('type' => 'domain');
++
++    #--------------------------------------------------------
++    # Returns an array of domains that require DNS
++    #--------------------------------------------------------
++    sub get_domains { return @domains; }
+ 
+-sub get_local_domainname { return $DomainName; }
++    sub get_local_domainname { return $DomainName; }
+ 
+-$OUT = '';
++    $OUT = '';
+ }
+Index: e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/30nameServers
+diff -u e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/30nameServers:1.2 e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/30nameServers:1.3
+--- e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/30nameServers:1.2	Wed Dec  4 12:15:28 2002
++++ e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/30nameServers	Mon Jan 12 11:54:05 2004
+@@ -8,7 +8,7 @@
+     use esmith::util;
+     # Add name server record for local reverse zone
+     my $reverse = 
+-	esmith::util::computeLocalNetworkReversed ($LocalIP, $LocalNetmask);
++        esmith::util::computeLocalNetworkReversed ($LocalIP, $LocalNetmask);
+     $reverse =~ s/\.$//;
+     $OUT .= ".$reverse\:\:127.0.0.1\n";
+ }
+Index: e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/60hostARecords
+diff -u e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/60hostARecords:1.2 e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/60hostARecords:1.5
+--- e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/60hostARecords:1.2	Tue Dec 31 18:20:19 2002
++++ e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/60hostARecords	Mon Jan 12 16:52:39 2004
+@@ -1,19 +1,23 @@
+ {
++    %allocated_ips = ();
+     foreach my $domain (get_domains())
+     {
+ 
+-    	$OUT .= "# A Records for Hosts in $domain\n";
++        $OUT .= "# A Records for Hosts in $domain\n";
+         foreach my $h ($hosts->get_hosts_by_domain($domain))
+         {
+-	    my $anIP = undef;
++            my $anIP = undef;
+             next unless my $hosttype = $h->prop('HostType');
+ 
+             if ($hosttype eq 'Self')
+             {
+                 $anIP = $LocalIP;
+             }
+-	    $anIP ||= $h->prop('ExternalIP') || $h->prop('InternalIP');
+-            $OUT .= "+" . $h->key . ":$anIP\n";
++            $anIP ||= $h->prop('ExternalIP') || $h->prop('InternalIP');
++            $OUT .= "=" . $h->key . ":$anIP\n";
++            # Note that this ip is taken, so we don't mention it in the
++            # general host list later.
++            $allocated_ips{$anIP} = 1 unless exists $allocated_ips{$anIP};
+         }
+         $OUT .= "\n";
+     }
+Index: e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/70genericHostARecords
+diff -u e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/70genericHostARecords:1.2 e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/70genericHostARecords:1.4
+--- e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/70genericHostARecords:1.2	Thu Nov 21 14:51:12 2002
++++ e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/70genericHostARecords	Mon Jan 12 16:52:39 2004
+@@ -6,6 +6,7 @@
+     $OUT .= "# Generic A Records for $domain\n";
+     foreach (sort keys %name2ip)
+     {
+-	$OUT .= "=$_.$domain" . ":" . $name2ip{$_} . "\n";
++        next if exists $allocated_ips{$name2ip{$_}};
++        $OUT .= "=$_.$domain" . ":" . $name2ip{$_} . "\n";
+     }
+ }

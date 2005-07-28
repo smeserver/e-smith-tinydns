@@ -1,0 +1,82 @@
+Index: e-smith-tinydns/createlinks
+diff -u e-smith-tinydns/createlinks:1.3 e-smith-tinydns/createlinks:1.4
+--- e-smith-tinydns/createlinks:1.3	Tue Dec 31 17:45:45 2002
++++ e-smith-tinydns/createlinks	Thu Aug 21 15:29:31 2003
+@@ -15,20 +15,6 @@
+ }
+ 
+ #--------------------------------------------------
+-# actions for post-install event:
+-#--------------------------------------------------
+-$event = "post-install";
+-
+-event_link("tinydns-conf-startup", $event, "55");
+-
+-#--------------------------------------------------
+-# actions for post-upgrade event:
+-#--------------------------------------------------
+-$event = "post-upgrade";
+-
+-event_link("tinydns-conf-startup", $event, "55");
+-
+-#--------------------------------------------------
+ # actions for bootstrap-console-save event:
+ #--------------------------------------------------
+ $event = "bootstrap-console-save";
+Index: e-smith-tinydns/e-smith-tinydns.spec
+diff -u /dev/null e-smith-tinydns/root/etc/e-smith/db/configuration/defaults/tinydns/status:1.1
+--- /dev/null	Thu Aug 21 15:30:38 2003
++++ e-smith-tinydns/root/etc/e-smith/db/configuration/defaults/tinydns/status	Thu Aug 21 15:29:31 2003
+@@ -0,0 +1 @@
++enabled
+Index: e-smith-tinydns/root/etc/e-smith/db/configuration/defaults/tinydns/type
+diff -u /dev/null e-smith-tinydns/root/etc/e-smith/db/configuration/defaults/tinydns/type:1.1
+--- /dev/null	Thu Aug 21 15:30:38 2003
++++ e-smith-tinydns/root/etc/e-smith/db/configuration/defaults/tinydns/type	Thu Aug 21 15:29:31 2003
+@@ -0,0 +1 @@
++service
+Index: e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-conf-startup
+diff -u e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-conf-startup:1.1 e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-conf-startup:removed
+--- e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-conf-startup:1.1	Tue Dec 31 17:45:45 2002
++++ e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-conf-startup	Wed Dec 31 19:00:00 1969
+@@ -1,40 +0,0 @@
+-#!/usr/bin/perl -w
+-
+-#----------------------------------------------------------------------
+-# copyright (C) 2002 Mitel Networks Corporation
+-# 
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-# 		
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-# 		
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+-# 
+-# Technical support for this program is available from Mitel Networks 
+-# Please visit our web site www.mitel.com/sme/ for details.
+-#----------------------------------------------------------------------
+-
+-package esmith;
+-
+-use strict;
+-use Errno;
+-use esmith::ConfigDB;
+-
+-my $conf = esmith::ConfigDB->open;
+-#--------------------------------------------------------------
+-# Check to see if the service has been enabled in the
+-# services database.  If not, set the defaults.
+-#--------------------------------------------------------------
+-
+-$conf->get('tinydns') || 
+-            $conf->new_record('tinydns',
+-	    {type => "service", status => "enabled"});
+-
+-exit (0);

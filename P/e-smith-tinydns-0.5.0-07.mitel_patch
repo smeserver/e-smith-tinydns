@@ -1,0 +1,56 @@
+Index: e-smith-tinydns/e-smith-tinydns.spec
+diff -u e-smith-tinydns/root/etc/e-smith/db/hosts/migrate/20tinydns:1.1 e-smith-tinydns/root/etc/e-smith/db/hosts/migrate/20tinydns:1.2
+--- e-smith-tinydns/root/etc/e-smith/db/hosts/migrate/20tinydns:1.1	Tue Jan 13 16:09:17 2004
++++ e-smith-tinydns/root/etc/e-smith/db/hosts/migrate/20tinydns	Tue Jan 13 21:31:34 2004
+@@ -6,8 +6,8 @@
+     my $fqdn = $systemname . '.' . $domainname;
+     die "Cannot determine FQDN of server!" unless $fqdn;
+ 
+-    # Make sure that the DNSAlias property of the proper name of the server is
+-    # set to "no", unless the $LocalIP has a configured PTR record already.
++    # Make sure that the ReverseDNS property of the proper name of the server
++    # is set to "yes", unless the $LocalIP has a configured PTR record already.
+     my $self_host = undef;
+     my $work_to_do = 1;
+     foreach my $host ($DB->get_all())
+@@ -17,7 +17,7 @@
+         {
+             $self_host = $host;
+         }
+-        if ($host->prop('DNSAlias') && ($host->prop('DNSAlias') eq 'no'))
++        if ($host->prop('ReverseDNS') && ($host->prop('ReverseDNS') eq 'yes'))
+         {
+             # It already has one configured. Nothing to do.
+             $work_to_do = 0;
+@@ -28,6 +28,6 @@
+     {
+         die "Failed to find host record for server's proper name!"
+             unless $self_host;
+-        $self_host->set_prop('DNSAlias', 'no');
++        $self_host->set_prop('ReverseDNS', 'yes');
+     }
+ }
+Index: e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/00functions
+diff -u e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/00functions:1.6 e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/00functions:1.7
+--- e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/00functions:1.6	Tue Jan 13 16:09:17 2004
++++ e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/00functions	Tue Jan 13 21:31:34 2004
+@@ -95,13 +95,17 @@
+             # A remote host must be a DNS alias. 
+             next if $host->prop('HostType') eq 'Remote';
+ 
+-            my $alias = $host->prop('DNSAlias') || "yes";
+-            if ($alias eq "no")
++            my $alias = $host->prop('ReverseDNS') || "no";
++            if ($alias eq "yes")
+             {
+                 # This host is not a DNS alias, so we should make note of it
+                 # for reverse DNS lookup purposes.
+                 my $ip = host2ip($host);
+                 $reverse_lookups{$ip} = $host->{key};
++                # Note: Here we clobber any existing key/value pair, so if
++                # there is more than one host with the same ip flagged as
++                # being the reversedns host, the last one entered in this hash
++                # will win. Don't do that. ;-)
+             }
+         }
+         return %reverse_lookups;

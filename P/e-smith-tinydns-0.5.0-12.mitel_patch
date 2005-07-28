@@ -1,0 +1,15 @@
+Index: e-smith-tinydns/e-smith-tinydns.spec
+diff -u e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/70genericHostARecords:1.4 e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/70genericHostARecords:1.5
+--- e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/70genericHostARecords:1.4	Mon Jan 12 16:52:39 2004
++++ e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/root/data/70genericHostARecords	Thu Mar 10 19:45:08 2005
+@@ -6,7 +6,8 @@
+     $OUT .= "# Generic A Records for $domain\n";
+     foreach (sort keys %name2ip)
+     {
+-        next if exists $allocated_ips{$name2ip{$_}};
+-        $OUT .= "=$_.$domain" . ":" . $name2ip{$_} . "\n";
++        $prefixchar = '=';
++        $prefixchar = '+' if exists $allocated_ips{$name2ip{$_}};
++        $OUT .= $prefixchar . "$_.$domain" . ":" . $name2ip{$_} . "\n";
+     }
+ }

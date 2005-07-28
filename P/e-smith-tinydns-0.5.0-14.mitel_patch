@@ -1,0 +1,205 @@
+Index: e-smith-tinydns/createlinks
+diff -u e-smith-tinydns/createlinks:1.5 e-smith-tinydns/createlinks:1.6
+--- e-smith-tinydns/createlinks:1.5	Thu Aug 28 13:41:45 2003
++++ e-smith-tinydns/createlinks	Mon Apr 11 18:08:03 2005
+@@ -1,44 +1,21 @@
+ #!/usr/bin/perl -w
+ # This script creates the symlinks needed by this RPM
+-# Specific support exists to create symlinks within e-smith web "panels"
+-# and for links from named "events" directories into the "actions" directory
+ 
+-sub event_link
+-{
+-    my ($action, $event, $level) = @_;
+-
+-    unlink "root/etc/e-smith/events/${event}/S${level}${action}";
+-    symlink("../actions/${action}",
+-	"root/etc/e-smith/events/${event}/S${level}${action}")
+-    or die "Can't symlink to " .
+-	"root/etc/e-smith/events/${event}/S${level}${action}: $!";
+-}
+-
+-sub safe_symlink {
+-    my ($from, $to) = @_;
+-    use File::Basename;
+-    use File::Path;
+-    mkpath(dirname($to));
+-    unlink($to);
+-    symlink($from, $to) or die "Can't create symlink from $from to $to: $!";
+-}
+-
+-sub service_link_enhanced
+-{
+-    my ($service, $level, $rc) = @_;
+-
+-    $rc = 7 unless defined $rc;
+-    $level =~ /[^\d]/ or $level = "S${level}";
+-    safe_symlink("/etc/rc.d/init.d/e-smith-service",
+-        "root/etc/rc.d/rc${rc}.d/${level}${service}");
+-}
++use esmith::Build::CreateLinks  qw(:all);
+ 
+ #--------------------------------------------------
+ # actions for bootstrap-console-save event:
+ #--------------------------------------------------
+ $event = "bootstrap-console-save";
+ 
+-event_link("tinydns-conf", $event, "25");
++foreach (qw(
++    env/IP
++    env/DATALIMIT
++    root/data
++    ))
++{
++    templates2events("/var/service/tinydns/$_", $event);
++}
+ 
+ safe_symlink("daemontools", "root/etc/rc.d/init.d/tinydns");
+ service_link_enhanced("tinydns", "S55", "7");
+Index: e-smith-tinydns/e-smith-tinydns.spec
+diff -u e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-conf:1.1 e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-conf:removed
+--- e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-conf:1.1	Tue Dec 31 17:45:45 2002
++++ e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-conf	Wed Dec 31 19:00:00 1969
+@@ -1,52 +0,0 @@
+-#!/usr/bin/perl -w
+-
+-#----------------------------------------------------------------------
+-# copyright (C) 2002 Mitel Networks Corporation
+-# 
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-# 		
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-# 		
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+-# 
+-# Technical support for this program is available from Mitel Networks 
+-# Please visit our web site www.mitel.com/sme/ for details.
+-#----------------------------------------------------------------------
+-
+-package esmith;
+-
+-use strict;
+-use Errno;
+-use esmith::templates;
+-
+-#------------------------------------------------------------
+-# Configure djbdns's tinydns DNS server
+-#------------------------------------------------------------
+-
+-foreach my $file (qw(IP DATALIMIT))
+-{
+-    esmith::templates::processTemplate ({
+-                        TEMPLATE_PATH => "/var/service/tinydns/env/$file",
+-                        PERMS => 0644,
+-                        });
+-}
+-
+-esmith::templates::processTemplate
+-    ( {
+-        TEMPLATE_PATH => "/var/service/tinydns/root/data",
+-    } );
+-
+-chdir "/var/service/tinydns/root" 
+-    or warn "Failed to change working directory";
+-system("/usr/local/bin/tinydns-data") == 0
+-    or warn("Failed to update tinydns zone data.\n");
+-
+-exit (0);
+Index: e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-restart
+diff -u e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-restart:1.5 e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-restart:removed
+--- e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-restart:1.5	Tue Dec 31 17:41:56 2002
++++ e-smith-tinydns/root/etc/e-smith/events/actions/tinydns-restart	Wed Dec 31 19:00:00 1969
+@@ -1,56 +0,0 @@
+-#!/usr/bin/perl -w
+-
+-#----------------------------------------------------------------------
+-# copyright (C) 2002 Mitel Networks Corporation
+-# 
+-# This program is free software; you can redistribute it and/or modify
+-# it under the terms of the GNU General Public License as published by
+-# the Free Software Foundation; either version 2 of the License, or
+-# (at your option) any later version.
+-# 		
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-# 		
+-# You should have received a copy of the GNU General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+-# 
+-# Technical support for this program is available from Mitel Networks 
+-# Please visit our web site www.mitel.com/sme/ for details.
+-#----------------------------------------------------------------------
+-
+-package esmith;
+-
+-use strict;
+-use Errno;
+-use esmith::ConfigDB;
+-use esmith::util;
+-
+-my $conf = esmith::ConfigDB->open;
+-#--------------------------------------------------------------
+-# Check to see if the service has been enabled in the
+-# services database.  If not, set the defaults.
+-#--------------------------------------------------------------
+-
+-my $tinydns = $conf->get('tinydns')
+-    or die("No tinydns entry in config db\n");
+-
+-#----------------------------------------------------------------------
+-# Restart tinydns server if the service is enabled. Stop it if the
+-# service has been disabled.
+-#----------------------------------------------------------------------
+-
+-my $status = $tinydns->prop("status") || "disabled";
+-
+-my $action = ($status eq "enabled") ? "restart" : "stop";
+-
+-esmith::util::serviceControl
+-    (
+-        NAME   => 'tinydns',
+-        ACTION => "$action",
+-    ) || warn ("Couldn't $action service tinydns");
+-
+-exit (0);
+-
+Index: e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/env/IP
+diff -u e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/env/IP:1.3 e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/env/IP:1.4
+--- e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/env/IP:1.3	Wed Nov 20 15:04:38 2002
++++ e-smith-tinydns/root/etc/e-smith/templates/var/service/tinydns/env/IP	Mon Apr 11 18:08:03 2005
+@@ -1,4 +1,3 @@
+ {
+-    my $ip = $tinydns{'ListenIP'} || "127.0.0.1";
+-    "$ip";
++    $OUT = $tinydns{'ListenIP'} || "127.0.0.1";
+ }
+Index: e-smith-tinydns/root/var/service/tinydns/run
+diff -u e-smith-tinydns/root/var/service/tinydns/run:1.1 e-smith-tinydns/root/var/service/tinydns/run:1.2
+--- e-smith-tinydns/root/var/service/tinydns/run:1.1	Mon Mar 18 13:13:17 2002
++++ e-smith-tinydns/root/var/service/tinydns/run	Mon Apr 11 18:08:03 2005
+@@ -1,5 +1,6 @@
+ #!/bin/sh
+ exec 2>&1
++./control/1
+ exec envdir ./env sh -c '
+  exec envuidgid dns \
+  softlimit -d "$DATALIMIT" \
+Index: e-smith-tinydns/root/var/service/tinydns/control/1
+diff -u /dev/null e-smith-tinydns/root/var/service/tinydns/control/1:1.1
+--- /dev/null	Mon Apr 11 18:08:32 2005
++++ e-smith-tinydns/root/var/service/tinydns/control/1	Mon Apr 11 18:08:03 2005
+@@ -0,0 +1,3 @@
++#! /bin/sh
++
++cd "/var/service/tinydns/root" && /usr/local/bin/tinydns-data

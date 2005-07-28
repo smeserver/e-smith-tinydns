@@ -1,0 +1,32 @@
+Index: e-smith-tinydns/e-smith-tinydns.spec
+diff -u e-smith-tinydns/root/etc/e-smith/db/hosts/migrate/20tinydns:1.2 e-smith-tinydns/root/etc/e-smith/db/hosts/migrate/20tinydns:1.3
+--- e-smith-tinydns/root/etc/e-smith/db/hosts/migrate/20tinydns:1.2	Tue Jan 13 21:31:34 2004
++++ e-smith-tinydns/root/etc/e-smith/db/hosts/migrate/20tinydns	Thu May 20 14:28:39 2004
+@@ -5,6 +5,7 @@
+     my $domainname = $confdb->get_value('DomainName');
+     my $fqdn = $systemname . '.' . $domainname;
+     die "Cannot determine FQDN of server!" unless $fqdn;
++    my $event = $ARGV[0] || "unknown";
+ 
+     # Make sure that the ReverseDNS property of the proper name of the server
+     # is set to "yes", unless the $LocalIP has a configured PTR record already.
+@@ -26,8 +27,17 @@
+     }
+     if ($work_to_do)
+     {
+-        die "Failed to find host record for server's proper name!"
+-            unless $self_host;
++	# Special case: during post-install we don't have a host record
++	# yet, so don't die.. just exit quietly.
++	if($event eq "post-install")
++	{
++	    exit 0;
++	}
++	else
++	{
++	    die "Failed to find host record for server's proper name!"
++		unless $self_host;
++	}
+         $self_host->set_prop('ReverseDNS', 'yes');
+     }
+ }
