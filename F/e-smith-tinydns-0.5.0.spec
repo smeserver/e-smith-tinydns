@@ -2,7 +2,7 @@ Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
 %define version 0.5.0
-%define release 17
+%define release 18
 Version: %{version}
 Release: %{release}
 License: GPL
@@ -24,6 +24,7 @@ Patch12: e-smith-tinydns-0.5.0-14.mitel_patch
 Patch13: e-smith-tinydns-0.5.0-15.mitel_patch
 Patch14: e-smith-tinydns-0.5.0-16.mitel_patch
 Patch15: e-smith-tinydns-0.5.0-17.mitel_patch
+Patch16: e-smith-tinydns-0.5.0-18.mitel_patch
 Packager: e-smith developers <bugs@e-smith.com>
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildRequires: e-smith-devtools
@@ -37,6 +38,10 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Tue Aug 16 2005 Charlie Brady <charlieb@e-smith.com>
+- [0.5.0-18]
+- Add defaults vals for UDPPort and access. [SF: 1246986]
+
 * Mon Jun  6 2005 Charlie Brady <charlieb@e-smith.com>
 - [0.5.0-17]
 - Add tinydns stats file digester and pretty printer (from
@@ -309,6 +314,7 @@ touch root/var/service/tinydns/down
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 
 %build
 perl createlinks
