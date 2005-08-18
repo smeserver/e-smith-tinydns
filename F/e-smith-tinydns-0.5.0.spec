@@ -2,7 +2,7 @@ Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
 %define version 0.5.0
-%define release 18
+%define release 19
 Version: %{version}
 Release: %{release}
 License: GPL
@@ -25,6 +25,7 @@ Patch13: e-smith-tinydns-0.5.0-15.mitel_patch
 Patch14: e-smith-tinydns-0.5.0-16.mitel_patch
 Patch15: e-smith-tinydns-0.5.0-17.mitel_patch
 Patch16: e-smith-tinydns-0.5.0-18.mitel_patch
+Patch17: e-smith-tinydns-0.5.0-19.mitel_patch
 Packager: e-smith developers <bugs@e-smith.com>
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildRequires: e-smith-devtools
@@ -38,6 +39,12 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Wed Aug 17 2005 Charlie Brady <charlieb@e-smith.com>
+- [0.5.0-19]
+- Fix access default property for tinydns. [SF: 1246986]
+- Add missing control/2 script, possibly required for ip-change
+  event handling.
+
 * Tue Aug 16 2005 Charlie Brady <charlieb@e-smith.com>
 - [0.5.0-18]
 - Add defaults vals for UDPPort and access. [SF: 1246986]
@@ -315,6 +322,7 @@ touch root/var/service/tinydns/down
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 %build
 perl createlinks

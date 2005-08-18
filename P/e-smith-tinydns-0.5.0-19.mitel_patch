@@ -1,0 +1,69 @@
+Index: e-smith-tinydns/e-smith-tinydns.spec
+diff -u e-smith-tinydns/root/etc/e-smith/db/configuration/defaults/tinydns/access:1.1 e-smith-tinydns/root/etc/e-smith/db/configuration/defaults/tinydns/access:1.2
+--- e-smith-tinydns/root/etc/e-smith/db/configuration/defaults/tinydns/access:1.1	Tue Aug 16 16:19:47 2005
++++ e-smith-tinydns/root/etc/e-smith/db/configuration/defaults/tinydns/access	Wed Aug 17 12:17:34 2005
+@@ -1 +1 @@
+-local
++localhost
+Index: e-smith-tinydns/root/var/service/tinydns/control/2
+diff -u /dev/null e-smith-tinydns/root/var/service/tinydns/control/2:1.1
+--- /dev/null	Wed Aug 17 12:18:02 2005
++++ e-smith-tinydns/root/var/service/tinydns/control/2	Wed Aug 17 12:17:34 2005
+@@ -0,0 +1,57 @@
++#!/usr/bin/perl -w
++
++#----------------------------------------------------------------------
++# copyright (C) 2002-2005 Mitel Networks Corporation
++# 
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 2 of the License, or
++# (at your option) any later version.
++# 		
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++# 		
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
++# 
++# Technical support for this program is available from Mitel Networks 
++# Please visit our web site www.mitel.com/sme/ for details.
++#----------------------------------------------------------------------
++
++package esmith;
++
++use strict;
++use Errno;
++use esmith::ConfigDB;
++use esmith::util;
++use esmith::templates;
++
++my $conf = esmith::ConfigDB->open;
++#--------------------------------------------------------------
++# If tinydns is running on the external interface IP,
++# then update the ListenIP property, expand the IP
++# config file, and restart the process.
++#--------------------------------------------------------------
++
++my $tinydns = $conf->get('tinydns')
++    or die("No tinydns entry in config db\n");
++my $listen_ip = $tinydns->prop("ListenIP");
++exit 0 unless defined $listen_ip;
++
++my $external_ip = $conf->get('ExternalIP')
++    or die("No ExternalIP entry in config db\n");
++$external_ip = $external_ip->value;
++exit 0 if ($external_ip eq $listen_ip);
++
++$tinydns->merge_props('ListenIP' => $external_ip);
++
++esmith::templates::processTemplate ({
++		    TEMPLATE_PATH => "/var/service/tinydns/env/IP",
++		    PERMS => 0644,
++		    });
++
++exec "runsvctrl", "t", "/service/tinydns" or
++    die "Could not exec runsvctrl: $!";
