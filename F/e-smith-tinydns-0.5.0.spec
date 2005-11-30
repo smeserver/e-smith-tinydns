@@ -2,7 +2,7 @@ Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
 %define version 0.5.0
-%define release 19
+%define release 20
 Version: %{version}
 Release: %{release}
 License: GPL
@@ -39,6 +39,9 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Wed Nov 30 2005 Gordon Rowell <gordonr@gormand.com.au> 0.5.0-20
+- Bump release number only
+
 * Wed Aug 17 2005 Charlie Brady <charlieb@e-smith.com>
 - [0.5.0-19]
 - Fix access default property for tinydns. [SF: 1246986]
