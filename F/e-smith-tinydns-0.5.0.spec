@@ -2,7 +2,7 @@ Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
 %define version 0.5.0
-%define release 20
+%define release 21
 Version: %{version}
 Release: %{release}
 License: GPL
@@ -39,6 +39,10 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Wed Nov 30 2005 Gordon Rowell <gordonr@gormand.com.au> 0.5.0-21
+- Remove % from (percent)prep in 0.2.0-01 changelog to keep
+  mezzanine/RPM happy. No code change.
+
 * Wed Nov 30 2005 Gordon Rowell <gordonr@gormand.com.au> 0.5.0-20
 - Bump release number only
 
@@ -285,7 +289,7 @@ AutoReqProv: no
 * Wed Mar 13 2002 Charlie Brady <charlieb@e-smith.com>
 - [0.2.0-01]
 - rollRPM: Rolled version number to 0.2.0-01. Includes patches up to 0.1.5-02.
-- added mkdir commands to %prep section to create all required empty
+- added mkdir commands to prep section to create all required empty
   directories.
 
 * Fri Oct 12 2001 Charlie Brady <charlieb@e-smith.com>
