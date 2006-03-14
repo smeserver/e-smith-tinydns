@@ -1,31 +1,13 @@
 Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
-%define version 0.5.0
-%define release 21
+%define version 0.6.0
+%define release 01
 Version: %{version}
 Release: %{release}
 License: GPL
 Group: Networking/Daemons
 Source: %{name}-%{version}.tar.gz
-Patch0: e-smith-tinydns-0.5.0-02.mitel_patch
-Patch1: e-smith-tinydns-0.5.0-03.mitel_patch
-Patch2: e-smith-tinydns-0.5.0-04.mitel_patch
-Patch3: e-smith-tinydns-0.5.0-05.mitel_patch
-Patch4: e-smith-tinydns-0.5.0-06.mitel_patch
-Patch5: e-smith-tinydns-0.5.0-07.mitel_patch
-Patch6: e-smith-tinydns-0.5.0-08.mitel_patch
-Patch7: e-smith-tinydns-0.5.0-09.mitel_patch
-Patch8: e-smith-tinydns-0.5.0-10.mitel_patch
-Patch9: e-smith-tinydns-0.5.0-11.mitel_patch
-Patch10: e-smith-tinydns-0.5.0-12.mitel_patch
-Patch11: e-smith-tinydns-0.5.0-13.mitel_patch
-Patch12: e-smith-tinydns-0.5.0-14.mitel_patch
-Patch13: e-smith-tinydns-0.5.0-15.mitel_patch
-Patch14: e-smith-tinydns-0.5.0-16.mitel_patch
-Patch15: e-smith-tinydns-0.5.0-17.mitel_patch
-Patch16: e-smith-tinydns-0.5.0-18.mitel_patch
-Patch17: e-smith-tinydns-0.5.0-19.mitel_patch
 Packager: e-smith developers <bugs@e-smith.com>
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildRequires: e-smith-devtools
@@ -39,6 +21,9 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Tue Mar 14 2006 Charlie Brady <charlie_brady@mitel.com> 0.6.0-01
+- Roll stable stream version. [SME: 1016]
+
 * Wed Nov 30 2005 Gordon Rowell <gordonr@gormand.com.au> 0.5.0-21
 - Remove % from (percent)prep in 0.2.0-01 changelog to keep
   mezzanine/RPM happy. No code change.
@@ -306,30 +291,6 @@ components of djbdns.
 
 %prep
 %setup
-mkdir -p root/etc/e-smith/events/post-upgrade
-mkdir -p root/etc/e-smith/events/post-install
-mkdir -p root/etc/e-smith/events/bootstrap-console-save
-mkdir -p root/service
-mkdir -p root/var/service/tinydns/root
-touch root/var/service/tinydns/down
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
 
 %build
 perl createlinks
