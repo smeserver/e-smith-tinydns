@@ -1,7 +1,7 @@
 Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
-%define version 0.6.0
+%define version 1.0.0
 %define release 01
 Version: %{version}
 Release: %{release}
@@ -21,6 +21,9 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Fri Mar 17 2006 Gordon Rowell <gordonr@gormand.com.au> 1.0.0-01
+- Bump stable stream number to 1.0.0 [SME: 1016]
+
 * Tue Mar 14 2006 Charlie Brady <charlie_brady@mitel.com> 0.6.0-01
 - Roll stable stream version. [SME: 1016]
 
