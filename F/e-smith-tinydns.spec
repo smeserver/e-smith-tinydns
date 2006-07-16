@@ -2,7 +2,7 @@ Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
 %define version 1.0.0
-%define release 01
+%define release 02
 Version: %{version}
 Release: %{release}
 License: GPL
@@ -21,6 +21,9 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Sun Jul 16 2006 Charlie Brady <charlie_brady@mitel.com> 1.0.0-02
+- Make dnslog user creation consistent with e-smith-dnscache. [SME: 1688]
+
 * Fri Mar 17 2006 Gordon Rowell <gordonr@gormand.com.au> 1.0.0-01
 - Bump stable stream number to 1.0.0 [SME: 1016]
 
@@ -322,7 +325,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %pre
 /sbin/e-smith/create-system-user dns 53 "Name server" /var/service/tinydns /bin/false
-/sbin/e-smith/create-system-user dnslog 411 "DNS log user" /var/log/tinydns /bin/false
+/sbin/e-smith/create-system-user dnslog 411 "DNS log user" /var/log /bin/false
 exit 0
 
 %preun
