@@ -2,12 +2,13 @@ Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
 %define version 1.0.0
-%define release 02
+%define release 03
 Version: %{version}
 Release: %{release}
 License: GPL
 Group: Networking/Daemons
 Source: %{name}-%{version}.tar.gz
+Patch0: e-smith-tinydns-1.0.0.ListenIP.patch
 Packager: e-smith developers <bugs@e-smith.com>
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildRequires: e-smith-devtools
@@ -21,6 +22,9 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Thu Sep 14 2006 Charlie Brady <charlie_brady@mitel.com> 1.0.0-03
+- Ensure that ListenIP property is clear in serveronly mode. [SME: 1912]
+
 * Sun Jul 16 2006 Charlie Brady <charlie_brady@mitel.com> 1.0.0-02
 - Make dnslog user creation consistent with e-smith-dnscache. [SME: 1688]
 
@@ -297,6 +301,7 @@ components of djbdns.
 
 %prep
 %setup
+%patch0 -p1
 
 %build
 perl createlinks
