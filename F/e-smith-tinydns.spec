@@ -2,7 +2,7 @@ Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
 %define version 1.0.0
-%define release 4
+%define release 5
 Version: %{version}
 Release: %smerelease %{release}
 Packager: %{_packager}
@@ -10,6 +10,7 @@ License: GPL
 Group: Networking/Daemons
 Source: %{name}-%{version}.tar.gz
 Patch0: e-smith-tinydns-1.0.0.ListenIP.patch
+Patch1: P/e-smith-tinydns-1.0.0-localnet.patch
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildRequires: e-smith-devtools
 BuildArchitectures: noarch
@@ -22,6 +23,9 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Sun Jan 14 2007 Shad L. Lords <slords@mail.com> 1.0.0-5
+- Make us authoritative for 127.0.0.x [SME: 2223]
+
 * Thu Dec 07 2006 Shad L. Lords <slords@mail.com>
 - Update to new release naming.  No functional changes.
 - Make Packager generic
@@ -306,6 +310,7 @@ components of djbdns.
 %prep
 %setup
 %patch0 -p1
+%patch1 -p1
 
 %build
 perl createlinks

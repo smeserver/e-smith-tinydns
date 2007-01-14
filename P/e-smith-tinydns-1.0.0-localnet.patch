@@ -1,0 +1,12 @@
+diff -Nur -x '*.orig' -x '*.rej' e-smith-tinydns-1.0.0/root/etc/e-smith/templates/var/service/tinydns/root/data/30nameServers mezzanine_patched_e-smith-tinydns-1.0.0/root/etc/e-smith/templates/var/service/tinydns/root/data/30nameServers
+--- e-smith-tinydns-1.0.0/root/etc/e-smith/templates/var/service/tinydns/root/data/30nameServers	2006-03-14 15:01:42.000000000 -0700
++++ mezzanine_patched_e-smith-tinydns-1.0.0/root/etc/e-smith/templates/var/service/tinydns/root/data/30nameServers	2007-01-14 09:29:16.000000000 -0700
+@@ -11,4 +11,8 @@
+         esmith::util::computeLocalNetworkReversed ($LocalIP, $LocalNetmask);
+     $reverse =~ s/\.$//;
+     $OUT .= ".$reverse\:\:127.0.0.1\n";
++    my $reverse = 
++        esmith::util::computeLocalNetworkReversed ('127.0.0.1', '255.255.255.0');
++    $reverse =~ s/\.$//;
++    $OUT .= ".$reverse\:\:127.0.0.1\n";
+ }
