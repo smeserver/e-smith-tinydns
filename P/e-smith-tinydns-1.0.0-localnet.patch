@@ -5,7 +5,7 @@ diff -Nur -x '*.orig' -x '*.rej' e-smith-tinydns-1.0.0/root/etc/e-smith/template
          esmith::util::computeLocalNetworkReversed ($LocalIP, $LocalNetmask);
      $reverse =~ s/\.$//;
      $OUT .= ".$reverse\:\:127.0.0.1\n";
-+    my $reverse = 
++    $reverse = 
 +        esmith::util::computeLocalNetworkReversed ('127.0.0.1', '255.255.255.0');
 +    $reverse =~ s/\.$//;
 +    $OUT .= ".$reverse\:\:127.0.0.1\n";

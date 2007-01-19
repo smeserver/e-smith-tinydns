@@ -2,7 +2,7 @@ Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
 %define version 1.0.0
-%define release 5
+%define release 6
 Version: %{version}
 Release: %smerelease %{release}
 Packager: %{_packager}
@@ -23,6 +23,9 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Fri Jan 19 2007 Shad L. Lords <slords@mail.com> 1.0.0-6
+- Fix last patch to remove warnings.
+
 * Sun Jan 14 2007 Shad L. Lords <slords@mail.com> 1.0.0-5
 - Make us authoritative for 127.0.0.x [SME: 2223]
 
