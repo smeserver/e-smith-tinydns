@@ -1,0 +1,11 @@
+diff -Nur -x '*.orig' -x '*.rej' e-smith-tinydns-1.0.0/root/var/service/tinydns/control/2 mezzanine_patched_e-smith-tinydns-1.0.0/root/var/service/tinydns/control/2
+--- e-smith-tinydns-1.0.0/root/var/service/tinydns/control/2	2006-03-14 15:01:42.000000000 -0700
++++ mezzanine_patched_e-smith-tinydns-1.0.0/root/var/service/tinydns/control/2	2007-02-16 13:49:03.000000000 -0700
+@@ -53,5 +53,5 @@
+ 		    PERMS => 0644,
+ 		    });
+ 
+-exec "runsvctrl", "t", "/service/tinydns" or
+-    die "Could not exec runsvctrl: $!";
++exec "sv", "t", "/service/tinydns" or
++    die "Could not exec sv: $!";

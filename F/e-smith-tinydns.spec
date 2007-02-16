@@ -2,7 +2,7 @@ Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
 %define version 1.0.0
-%define release 6
+%define release 7
 Version: %{version}
 Release: %smerelease %{release}
 Packager: %{_packager}
@@ -10,7 +10,8 @@ License: GPL
 Group: Networking/Daemons
 Source: %{name}-%{version}.tar.gz
 Patch0: e-smith-tinydns-1.0.0.ListenIP.patch
-Patch1: P/e-smith-tinydns-1.0.0-localnet.patch
+Patch1: e-smith-tinydns-1.0.0-localnet.patch
+Patch2: e-smith-tinydns-1.0.0-runit17.patch
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildRequires: e-smith-devtools
 BuildArchitectures: noarch
@@ -23,6 +24,9 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Fri Feb 16 2007 Shad L. Lords <slords@mail.com> 1.0.0-7
+- Change runsvctrl to sv to support runit v1.7.x
+
 * Fri Jan 19 2007 Shad L. Lords <slords@mail.com> 1.0.0-6
 - Fix last patch to remove warnings.
 
@@ -314,6 +318,7 @@ components of djbdns.
 %setup
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 perl createlinks
