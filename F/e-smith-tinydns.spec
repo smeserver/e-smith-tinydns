@@ -25,7 +25,7 @@ AutoReqProv: no
 
 %changelog
 * Fri Feb 16 2007 Shad L. Lords <slords@mail.com> 1.0.0-7
-- Change runsvctrl to sv to support runit v1.7.x
+- Change runsvctrl to sv to support runit v1.7.x [SME: 1179]
 
 * Fri Jan 19 2007 Shad L. Lords <slords@mail.com> 1.0.0-6
 - Fix last patch to remove warnings.
