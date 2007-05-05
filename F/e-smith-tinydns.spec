@@ -4,8 +4,7 @@ Name: %{name}
 %define version 1.0.0
 %define release 7
 Version: %{version}
-Release: %smerelease %{release}
-Packager: %{_packager}
+Release: %{release}%{?dist}
 License: GPL
 Group: Networking/Daemons
 Source: %{name}-%{version}.tar.gz
@@ -24,6 +23,9 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Sun Apr 29 2007 Shad L. Lords <slords@mail.com>
+- Clean up spec so package can be built by koji/plague
+
 * Fri Feb 16 2007 Shad L. Lords <slords@mail.com> 1.0.0-7
 - Change runsvctrl to sv to support runit v1.7.x [SME: 1179]
 
