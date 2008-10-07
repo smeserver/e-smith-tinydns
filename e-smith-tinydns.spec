@@ -1,16 +1,15 @@
+# $Id: e-smith-tinydns.spec,v 1.2 2008/10/07 19:24:02 slords Exp $
+
 Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
-%define version 1.0.0
-%define release 7
+%define version 2.2.0
+%define release 1
 Version: %{version}
 Release: %{release}%{?dist}
 License: GPL
 Group: Networking/Daemons
 Source: %{name}-%{version}.tar.gz
-Patch0: e-smith-tinydns-1.0.0.ListenIP.patch
-Patch1: e-smith-tinydns-1.0.0-localnet.patch
-Patch2: e-smith-tinydns-1.0.0-runit17.patch
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildRequires: e-smith-devtools
 BuildArchitectures: noarch
@@ -23,6 +22,9 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Tue Oct 7 2008 Shad L. Lords <slords@mail.com> 2.2.0-1.sme
+- Roll new stream to separate sme7/sme8 trees [SME: 4633]
+
 * Sun Apr 29 2007 Shad L. Lords <slords@mail.com>
 - Clean up spec so package can be built by koji/plague
 
@@ -318,9 +320,6 @@ components of djbdns.
 
 %prep
 %setup
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 perl createlinks
