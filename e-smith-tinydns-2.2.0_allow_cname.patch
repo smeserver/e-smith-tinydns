@@ -1,0 +1,24 @@
+diff -Naur e-smith-tinydns-2.2.0-orig/root/etc/e-smith/templates/var/service/tinydns/root/data/60hostARecords e-smith-tinydns-2.2.0/root/etc/e-smith/templates/var/service/tinydns/root/data/60hostARecords
+--- e-smith-tinydns-2.2.0-orig/root/etc/e-smith/templates/var/service/tinydns/root/data/60hostARecords	2006-03-14 23:01:42.000000000 +0100
++++ e-smith-tinydns-2.2.0/root/etc/e-smith/templates/var/service/tinydns/root/data/60hostARecords	2010-07-29 15:43:29.034923045 +0200
+@@ -9,6 +9,12 @@
+             my $anIP = host2ip($h);
+ 
+             my $prefixchar = '+';
++            if ($anIP !~ /^\d+\.\d+\.\d+\.\d+$/)
++            {
++                $prefixchar = 'C';
++            }
++            else
++            {
+             my %reverse_lookups = get_reverse_lookup_choices();
+             # If this IP is spoken for, then we know which host to use for the
+             # reverse DNS lookup PTR.
+@@ -32,6 +38,7 @@
+             # Note that this ip is taken.
+             $allocated_ips{$anIP} = 1;
+ 
++          }
+             $OUT .= $prefixchar . $h->key . ":$anIP\n";
+         }
+         $OUT .= "\n";

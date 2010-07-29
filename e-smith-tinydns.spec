@@ -1,15 +1,16 @@
-# $Id: e-smith-tinydns.spec,v 1.2 2008/10/07 19:24:02 slords Exp $
+# $Id: e-smith-tinydns.spec,v 1.3 2010/07/29 14:28:58 filippocarletti Exp $
 
 Summary: e-smith module to configure tinydns
 %define name e-smith-tinydns
 Name: %{name}
 %define version 2.2.0
-%define release 1
+%define release 2
 Version: %{version}
 Release: %{release}%{?dist}
 License: GPL
 Group: Networking/Daemons
 Source: %{name}-%{version}.tar.gz
+Patch1: e-smith-tinydns-2.2.0_allow_cname.patch
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-buildroot
 BuildRequires: e-smith-devtools
 BuildArchitectures: noarch
@@ -22,6 +23,9 @@ Obsoletes: tinydns-initscripts
 AutoReqProv: no
 
 %changelog
+* Thu Jul 29 2010 Filippo Carletti <filippo.carletti@gmail.com> 2.2.0-2.sme
+- Allow use of CNAME in remote hosts [SME: 3132]
+
 * Tue Oct 7 2008 Shad L. Lords <slords@mail.com> 2.2.0-1.sme
 - Roll new stream to separate sme7/sme8 trees [SME: 4633]
 
@@ -320,6 +324,7 @@ components of djbdns.
 
 %prep
 %setup
+%patch1 -p1
 
 %build
 perl createlinks
